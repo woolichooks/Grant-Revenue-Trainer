@@ -1,0 +1,30 @@
+/* App-level resets + the feedback rise animation. Tokens live in tokens.css. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--ww-navy-050);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+@keyframes gtRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

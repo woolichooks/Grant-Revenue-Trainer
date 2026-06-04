@@ -1,0 +1,253 @@
+/* ============================================================
+   Woolichooks Design System — Colors & Type tokens
+   ------------------------------------------------------------
+   Import the fonts (Google Fonts) once at the top of your page:
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600&family=Pacifico&display=swap" rel="stylesheet">
+   ============================================================ */
+
+:root {
+  /* ---------- Brand colors (from brand brief) ---------- */
+  --ww-blue: #195AF1;          /* Primary. Wordmark, primary CTAs, links. */
+  --ww-blue-soft: #99A2F1;     /* Secondary accent. Section dividers, soft fills. */
+  --ww-yellow: #F2B604;        /* Warm accent. Highlights, decorative dots. */
+  --ww-navy: #293559;          /* Ink. Body text, dark surfaces. */
+  --ww-paper: #FCFCFC;         /* Surface. Default off-white background. */
+
+  /* ---------- Derived colors ---------- */
+  --ww-blue-700: #0E47C9;      /* hover/pressed primary */
+  --ww-blue-100: #E5ECFE;      /* tinted surface */
+  --ww-yellow-700: #C99A03;    /* yellow on hover/pressed */
+  --ww-yellow-100: #FDF1CB;    /* tinted yellow surface */
+  --ww-navy-700: #1B2440;      /* darker navy for headings on light */
+  --ww-navy-500: #5C6786;      /* secondary text */
+  --ww-navy-300: #A4ABBE;      /* tertiary text / placeholder */
+  --ww-navy-100: #E7E9EF;      /* dividers */
+  --ww-navy-050: #F4F5F8;      /* tinted surface */
+
+  /* ---------- Semantic colors ---------- */
+  --ww-text: var(--ww-navy);
+  --ww-text-muted: var(--ww-navy-500);
+  --ww-text-tertiary: var(--ww-navy-300);
+  --ww-text-on-blue: #FFFFFF;
+  --ww-text-on-yellow: var(--ww-navy);
+  --ww-bg: var(--ww-paper);
+  --ww-bg-elevated: #FFFFFF;
+  --ww-bg-tinted: var(--ww-navy-050);
+  --ww-border: rgba(41, 53, 89, 0.10);
+  --ww-border-strong: var(--ww-navy);
+  --ww-focus-ring: rgba(25, 90, 241, 0.35);
+  --ww-link: var(--ww-blue);
+  --ww-success: #1A8754;
+  --ww-warning: var(--ww-yellow);
+  --ww-error: #D92D20;
+
+  /* ---------- Type families ---------- */
+  --ww-font-display: 'Pacifico', 'Brush Script MT', cursive;
+  --ww-font-heading: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ww-font-body: 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ww-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---------- Type scale ---------- */
+  --ww-text-xs: 12px;
+  --ww-text-sm: 14px;
+  --ww-text-base: 16px;
+  --ww-text-md: 18px;
+  --ww-text-lg: 20px;
+  --ww-text-xl: 24px;
+  --ww-text-2xl: 32px;
+  --ww-text-3xl: 40px;
+  --ww-text-4xl: 56px;
+  --ww-text-5xl: 72px;
+  --ww-text-display: 96px;
+
+  /* ---------- Line heights ---------- */
+  --ww-leading-tight: 1.1;
+  --ww-leading-snug: 1.25;
+  --ww-leading-normal: 1.5;
+  --ww-leading-relaxed: 1.65;
+
+  /* ---------- Weights (Montserrat / Open Sans) ---------- */
+  --ww-weight-regular: 400;
+  --ww-weight-medium: 500;
+  --ww-weight-semibold: 600;
+  --ww-weight-bold: 700;
+  --ww-weight-extrabold: 800;
+
+  /* ---------- Spacing scale (4px base) ---------- */
+  --ww-space-1: 4px;
+  --ww-space-2: 8px;
+  --ww-space-3: 12px;
+  --ww-space-4: 16px;
+  --ww-space-5: 20px;
+  --ww-space-6: 24px;
+  --ww-space-8: 32px;
+  --ww-space-10: 40px;
+  --ww-space-12: 48px;
+  --ww-space-16: 64px;
+  --ww-space-20: 80px;
+  --ww-space-24: 96px;
+  --ww-space-32: 128px;
+
+  /* ---------- Radii ---------- */
+  --ww-radius-sm: 6px;
+  --ww-radius-md: 12px;
+  --ww-radius-lg: 20px;
+  --ww-radius-xl: 32px;
+  --ww-radius-pill: 999px;
+
+  /* ---------- Shadows ---------- */
+  --ww-shadow-sm: 0 1px 2px rgba(41, 53, 89, 0.06), 0 1px 1px rgba(41, 53, 89, 0.04);
+  --ww-shadow-md: 0 4px 12px rgba(41, 53, 89, 0.08), 0 2px 4px rgba(41, 53, 89, 0.04);
+  --ww-shadow-lg: 0 12px 32px rgba(41, 53, 89, 0.10), 0 4px 8px rgba(41, 53, 89, 0.06);
+  --ww-shadow-xl: 0 24px 60px rgba(41, 53, 89, 0.14), 0 8px 16px rgba(41, 53, 89, 0.06);
+  --ww-shadow-blue: 0 10px 30px rgba(25, 90, 241, 0.25);
+  --ww-shadow-yellow: 0 8px 24px rgba(242, 182, 4, 0.30);
+
+  /* ---------- Layout ---------- */
+  --ww-container: 1200px;
+  --ww-container-narrow: 880px;
+
+  /* ---------- Motion ---------- */
+  --ww-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ww-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ww-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ww-dur-fast: 150ms;
+  --ww-dur-base: 250ms;
+  --ww-dur-slow: 400ms;
+}
+
+/* ============================================================
+   Semantic element styles
+   ============================================================ */
+
+html, body {
+  background: var(--ww-bg);
+  color: var(--ww-text);
+  font-family: var(--ww-font-body);
+  font-size: var(--ww-text-base);
+  line-height: var(--ww-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--ww-blue);
+  color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ww-font-heading);
+  color: var(--ww-navy-700);
+  line-height: var(--ww-leading-tight);
+  letter-spacing: -0.01em;
+  font-weight: var(--ww-weight-bold);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--ww-text-4xl);
+  font-weight: var(--ww-weight-extrabold);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: var(--ww-text-3xl);
+  font-weight: var(--ww-weight-bold);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: var(--ww-text-2xl);
+  font-weight: var(--ww-weight-bold);
+}
+
+h4 {
+  font-size: var(--ww-text-xl);
+  font-weight: var(--ww-weight-semibold);
+}
+
+h5 {
+  font-size: var(--ww-text-lg);
+  font-weight: var(--ww-weight-semibold);
+}
+
+h6 {
+  font-size: var(--ww-text-md);
+  font-weight: var(--ww-weight-semibold);
+}
+
+p {
+  margin: 0;
+  font-family: var(--ww-font-body);
+  font-size: var(--ww-text-base);
+  line-height: var(--ww-leading-relaxed);
+  color: var(--ww-text);
+  text-wrap: pretty;
+}
+
+small {
+  font-size: var(--ww-text-sm);
+  color: var(--ww-text-muted);
+}
+
+a {
+  color: var(--ww-link);
+  text-decoration: none;
+  transition: color var(--ww-dur-fast) var(--ww-ease);
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: 3px solid var(--ww-focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Display / Pacifico wordmark utility ---------- */
+.ww-display,
+.ww-wordmark {
+  font-family: var(--ww-font-display);
+  font-weight: 400;
+  color: var(--ww-blue);
+  line-height: 1;
+  letter-spacing: 0.005em;
+}
+
+/* ---------- Eyebrow / overline label ---------- */
+.ww-eyebrow {
+  font-family: var(--ww-font-heading);
+  font-weight: var(--ww-weight-semibold);
+  font-size: var(--ww-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ww-blue);
+}
+
+/* ---------- Lead paragraph ---------- */
+.ww-lead {
+  font-family: var(--ww-font-body);
+  font-size: var(--ww-text-lg);
+  line-height: var(--ww-leading-relaxed);
+  color: var(--ww-text-muted);
+}
+
+/* ---------- Code ---------- */
+code, kbd, samp {
+  font-family: var(--ww-font-mono);
+  font-size: 0.92em;
+  background: var(--ww-navy-050);
+  border: 1px solid var(--ww-navy-100);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--ww-navy);
+}

@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+coverage
+
+# Reference material (FASB source PDFs / extracted text) is kept out of the app build
+*.pdf
+
+# TS build info
+*.tsbuildinfo

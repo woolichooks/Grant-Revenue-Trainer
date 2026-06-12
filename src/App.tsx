@@ -5,6 +5,7 @@ import { useGameState, isComplete } from './state/useGameState';
 import { HomeScreen } from './screens/HomeScreen';
 import { PlayScreen } from './screens/PlayScreen';
 import { ResultsScreen } from './screens/ResultsScreen';
+import { NameGate } from './components/NameGate';
 
 type Screen = 'home' | 'play' | 'results';
 type Mode = 'normal' | 'challenge';
@@ -85,9 +86,16 @@ export default function App() {
       }}
     >
       <div style={{ width: '100%', maxWidth: 640 }}>
+        {!game.player ? (
+          <NameGate onSubmit={game.setPlayer} />
+        ) : (
+        <>
         {screen === 'home' && (
           <HomeScreen
             results={game.results}
+            times={game.times}
+            player={game.player}
+            onChangePlayer={game.setPlayer}
             points={game.points}
             bestStreak={game.bestStreak}
             completedCount={game.completedCount}
@@ -108,8 +116,17 @@ export default function App() {
             settings={game.settings}
             points={game.points}
             savedAnswers={game.results[scenario.id] || {}}
+            levelTime={game.times[scenario.id]}
             onAnswer={game.recordAnswer}
             onBestStreak={game.bumpStreak}
+            onSessionTime={(ms) => game.addSessionTime(scenario.id, ms)}
+            onLevelComplete={(score, activeMs) =>
+              game.completeLevel(scenario.id, score, activeMs, {
+                levelIndex: scenario.levelIndex ?? null,
+                levelLabel: scenario.title,
+                challenge: !!scenario.challenge,
+              })
+            }
             onExit={goHome}
             onAdvance={advance}
             isLast={level === activeScenarios.length - 1}
@@ -124,6 +141,8 @@ export default function App() {
             onHome={goHome}
             onReset={reset}
           />
+        )}
+        </>
         )}
       </div>
     </div>

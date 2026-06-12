@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, FileText, Trophy, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, Check, Clock, FileText, Trophy, X } from 'lucide-react';
 import type { AnswerRecord, Scenario, Settings, TopicKey } from '../data/types';
 import { buildQuestions, isCorrect } from '../engine/engine';
 import { FYE_NOTE } from '../data/topics';
@@ -10,6 +10,8 @@ import { ExcerptBlocks } from '../components/ExcerptBlocks';
 import { MoneyInput } from '../components/MoneyInput';
 import { playCorrect, playWrong, playLevelComplete, setSoundEnabled } from '../audio/sounds';
 import { resumeFrom } from '../state/resume';
+import type { LevelTime } from '../state/timing';
+import { formatDuration } from '../state/timing';
 
 interface PlayScreenProps {
   scenario: Scenario;
@@ -17,8 +19,14 @@ interface PlayScreenProps {
   points: number;
   /** Answers already saved for this scenario — used to resume mid-level. */
   savedAnswers: Partial<Record<TopicKey, AnswerRecord>>;
+  /** Accumulated solve time for this scenario from prior sessions. */
+  levelTime?: LevelTime;
   onAnswer: (sid: string, topic: TopicKey, val: AnswerRecord) => void;
   onBestStreak: (n: number) => void;
+  /** Bank this session's active play time when leaving the level mid-way. */
+  onSessionTime?: (ms: number) => void;
+  /** Fired once when the level is completed live, with score and total ms. */
+  onLevelComplete?: (score: number, activeMs: number) => void;
   onExit: () => void;
   onAdvance: () => void;
   isLast: boolean;
@@ -29,8 +37,11 @@ export function PlayScreen({
   settings,
   points,
   savedAnswers,
+  levelTime,
   onAnswer,
   onBestStreak,
+  onSessionTime,
+  onLevelComplete,
   onExit,
   onAdvance,
   isLast,
@@ -100,6 +111,44 @@ export function PlayScreen({
   }
 
   const caseRight = Object.values(perTopic).filter((x) => x?.correct).length;
+
+  // ---- Solve-time tracking ----------------------------------------------
+  // Active play time banked from prior sessions (resume), the wall-clock start
+  // of this mount, and a guard so a session is only counted once.
+  const bankedMs = useRef(levelTime?.activeMs ?? 0).current;
+  const startedAt = useRef(Date.now());
+  const accounted = useRef(false);
+  // If we mounted straight into the summary, the level was already finished —
+  // nothing to time or submit this session.
+  const wasCompleteAtMount = useRef(resume.qIdx >= questions.length).current;
+  const [solveMs, setSolveMs] = useState<number | null>(
+    wasCompleteAtMount ? levelTime?.activeMs ?? null : null,
+  );
+
+  // Leaving the level mid-way banks this session's active time for next time.
+  // Resetting in setup keeps this correct under StrictMode's mount→unmount→
+  // mount cycle (the simulated unmount banks ~0ms; the real one banks the run).
+  useEffect(() => {
+    accounted.current = false;
+    startedAt.current = Date.now();
+    return () => {
+      if (accounted.current) return;
+      accounted.current = true;
+      onSessionTime?.(Date.now() - startedAt.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // On live completion: fold this session into the banked total, then record
+  // and submit it exactly once.
+  useEffect(() => {
+    if (!atSummary || wasCompleteAtMount || accounted.current) return;
+    accounted.current = true; // accounted via the total below, not on unmount
+    const total = bankedMs + (Date.now() - startedAt.current);
+    setSolveMs(total);
+    onLevelComplete?.(caseRight, total);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atSummary]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -438,7 +487,27 @@ export function PlayScreen({
             {caseRight}
             <span style={{ fontSize: 22, opacity: 0.7 }}>/7</span>
           </div>
-          <div style={{ fontSize: 14, opacity: 0.85, marginTop: 4, marginBottom: 20 }}>{scenario.title}</div>
+          <div style={{ fontSize: 14, opacity: 0.85, marginTop: 4, marginBottom: solveMs != null ? 12 : 20 }}>
+            {scenario.title}
+          </div>
+          {solveMs != null && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(255,255,255,0.14)',
+                borderRadius: 999,
+                padding: '6px 14px',
+                marginBottom: 20,
+                fontFamily: "'Montserrat',sans-serif",
+                fontWeight: 700,
+                fontSize: 13,
+              }}
+            >
+              <Clock size={14} color="var(--ww-yellow)" /> Solved in {formatDuration(solveMs)}
+            </div>
+          )}
           <div
             style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: 24 }}
           >

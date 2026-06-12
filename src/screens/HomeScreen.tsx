@@ -1,14 +1,19 @@
-import { Check, Lock, Swords, Trophy, Volume2, VolumeX } from 'lucide-react';
+import { Check, Clock, Lock, Swords, Trophy, Volume2, VolumeX } from 'lucide-react';
 import type { Results, Settings } from '../data/types';
 import { SCENARIOS } from '../data/scenarios';
 import { CHALLENGE_SCENARIOS } from '../data/challenge';
 import { isComplete, scoreOf } from '../state/useGameState';
+import type { LevelTimes } from '../state/timing';
+import { formatDuration } from '../state/timing';
 import { FYChip } from '../components/FYChip';
 import { Toggle } from '../components/Toggle';
 import { ReviewButton } from '../components/ReviewButton';
 
 interface HomeScreenProps {
   results: Results;
+  times: LevelTimes;
+  player: string;
+  onChangePlayer: (name: string) => void;
   points: number;
   bestStreak: number;
   completedCount: number;
@@ -296,6 +301,9 @@ function SettingsCard({
 
 export function HomeScreen({
   results,
+  times,
+  player,
+  onChangePlayer,
   points,
   bestStreak,
   completedCount,
@@ -358,6 +366,35 @@ export function HomeScreen({
           2016-14.
         </p>
         <FYChip />
+        <div
+          style={{
+            marginTop: 12,
+            fontFamily: "'Open Sans',sans-serif",
+            fontSize: 12.5,
+            color: 'var(--ww-navy-300)',
+          }}
+        >
+          Playing as <strong style={{ color: 'var(--ww-navy-500)' }}>{player}</strong>
+          <button
+            onClick={() => {
+              const next = window.prompt('Your name', player);
+              if (next && next.trim()) onChangePlayer(next);
+            }}
+            style={{
+              marginLeft: 8,
+              background: 'none',
+              border: 0,
+              padding: 0,
+              cursor: 'pointer',
+              fontFamily: "'Open Sans',sans-serif",
+              fontSize: 12.5,
+              color: 'var(--ww-blue)',
+              textDecoration: 'underline',
+            }}
+          >
+            change
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -515,6 +552,23 @@ export function HomeScreen({
                     Play →
                   </span>
                 ) : null}
+                {done && times[s.id]?.completed && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      gap: 3,
+                      fontSize: 11,
+                      color: 'var(--ww-navy-500)',
+                      fontFamily: "'Montserrat',sans-serif",
+                      fontWeight: 700,
+                      marginTop: 1,
+                    }}
+                  >
+                    <Clock size={11} /> {formatDuration(times[s.id].activeMs)}
+                  </div>
+                )}
                 {done && (
                   <div
                     style={{

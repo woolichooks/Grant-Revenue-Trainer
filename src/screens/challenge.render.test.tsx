@@ -43,6 +43,9 @@ describe('HomeScreen challenge card', () => {
     const html = renderToString(
       <HomeScreen
         results={{}}
+        times={{}}
+        player="Tester"
+        onChangePlayer={noop}
         points={0}
         bestStreak={0}
         completedCount={2}
@@ -63,6 +66,9 @@ describe('HomeScreen challenge card', () => {
     const html = renderToString(
       <HomeScreen
         results={{}}
+        times={{}}
+        player="Tester"
+        onChangePlayer={noop}
         points={0}
         bestStreak={0}
         completedCount={6}
@@ -85,6 +91,9 @@ describe('HomeScreen challenge card', () => {
     const html = renderToString(
       <HomeScreen
         results={{}}
+        times={{}}
+        player="Tester"
+        onChangePlayer={noop}
         points={0}
         bestStreak={0}
         completedCount={0}

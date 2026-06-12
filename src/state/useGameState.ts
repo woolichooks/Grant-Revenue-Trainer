@@ -1,14 +1,17 @@
 /* ============================================================
-   Game state: results, bestStreak, settings — persisted to
-   localStorage under the prototype's key so the storage contract
-   is identical. Derived helpers (points, completion, score).
+   Game state: results, bestStreak, settings, player name & per-level
+   solve times — persisted to localStorage. Derived helpers (points,
+   completion, score). Completed levels submit their solve time to
+   Supabase (see lib/telemetry).
    ============================================================ */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AnswerRecord, Results, Settings, TopicKey } from '../data/types';
 import { SCENARIOS } from '../data/scenarios';
 import { CHALLENGE_SCENARIOS } from '../data/challenge';
 import { TOPICS } from '../data/topics';
 import { computePoints } from './scoring';
+import type { LevelTimes } from './timing';
+import { flushOutbox, submitLevelTime } from '../lib/telemetry';
 
 const STORE_KEY = 'ww-grant-trainer-v2';
 
@@ -16,6 +19,15 @@ interface StoredState {
   results?: Results;
   bestStreak?: number;
   settings?: Settings;
+  player?: string;
+  times?: LevelTimes;
+}
+
+/** Metadata describing a level, supplied when submitting its solve time. */
+export interface LevelMeta {
+  levelIndex: number | null;
+  levelLabel: string;
+  challenge: boolean;
 }
 
 function loadState(): StoredState {
@@ -49,10 +61,28 @@ export function useGameState() {
   const [results, setResults] = useState<Results>(init.results || {});
   const [bestStreak, setBestStreak] = useState<number>(init.bestStreak || 0);
   const [settings, setSettings] = useState<Settings>(init.settings || { pvMode: false, pvRate: 5, sound: true });
+  const [player, setPlayerState] = useState<string>(init.player || '');
+  const [times, setTimes] = useState<LevelTimes>(init.times || {});
+
+  // Keep the latest player name in a ref so completion callbacks (which are
+  // memoized) always submit with the current name, not a stale closure.
+  const playerRef = useRef(player);
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
+
+  // Levels already submitted this app session — guards against duplicate
+  // submissions (e.g. React StrictMode double-invokes). Cleared on replay.
+  const submittedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    saveState({ results, bestStreak, settings });
-  }, [results, bestStreak, settings]);
+    saveState({ results, bestStreak, settings, player, times });
+  }, [results, bestStreak, settings, player, times]);
+
+  // Retry any solve-time submissions that were parked while offline.
+  useEffect(() => {
+    void flushOutbox();
+  }, []);
 
   // Points are derived (not accumulated) and recomputed every render so
   // replays stay consistent. Normal answers score 10; challenge answers 20.
@@ -68,15 +98,60 @@ export function useGameState() {
       delete c[sid];
       return c;
     });
+    // Replaying a level re-times it from scratch and may submit a new row.
+    submittedRef.current.delete(sid);
+    setTimes((t) => {
+      if (!t[sid]) return t;
+      const c = { ...t };
+      delete c[sid];
+      return c;
+    });
   }, []);
 
   const bumpStreak = useCallback((n: number) => {
     setBestStreak((b) => Math.max(b, n));
   }, []);
 
+  const setPlayer = useCallback((name: string) => {
+    setPlayerState(name.trim());
+  }, []);
+
+  // Bank a session's worth of active play time into a level's running total.
+  // Ignored once the level is completed.
+  const addSessionTime = useCallback((sid: string, ms: number) => {
+    if (ms <= 0) return;
+    setTimes((t) => {
+      const cur = t[sid] || { activeMs: 0, completed: false };
+      if (cur.completed) return t;
+      return { ...t, [sid]: { ...cur, activeMs: cur.activeMs + ms } };
+    });
+  }, []);
+
+  // Mark a level complete and submit its total solve time once. `activeMs` is
+  // the final accumulated play time, computed by the caller. Idempotent per
+  // level via submittedRef, so it's safe under StrictMode double-invocation.
+  const completeLevel = useCallback((sid: string, score: number, activeMs: number, meta: LevelMeta) => {
+    if (submittedRef.current.has(sid)) return;
+    submittedRef.current.add(sid);
+    const completedAt = Date.now();
+    setTimes((t) => ({ ...t, [sid]: { activeMs, completed: true, completedAt } }));
+    void submitLevelTime({
+      player_name: playerRef.current || 'Anonymous',
+      level_id: sid,
+      level_index: meta.levelIndex,
+      level_label: meta.levelLabel,
+      mode: meta.challenge ? 'challenge' : 'normal',
+      score,
+      active_ms: activeMs,
+      completed_at: new Date(completedAt).toISOString(),
+    });
+  }, []);
+
   const resetAll = useCallback(() => {
     setResults({});
     setBestStreak(0);
+    setTimes({});
+    submittedRef.current.clear();
   }, []);
 
   const completedCount = SCENARIOS.filter((s) => isComplete(results, s.id)).length;
@@ -89,6 +164,9 @@ export function useGameState() {
     bestStreak,
     settings,
     setSettings,
+    player,
+    setPlayer,
+    times,
     points,
     completedCount,
     challengeCompletedCount,
@@ -96,6 +174,8 @@ export function useGameState() {
     recordAnswer,
     clearScenario,
     bumpStreak,
+    addSessionTime,
+    completeLevel,
     resetAll,
   };
 }

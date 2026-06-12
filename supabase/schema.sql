@@ -27,6 +27,12 @@ create index if not exists level_times_level_idx  on public.level_times (level_i
 -- Lock the table down: nothing is allowed unless a policy says so.
 alter table public.level_times enable row level security;
 
+-- Grant the table-level INSERT privilege to the app's roles. RLS policies
+-- alone are not enough — Postgres also checks GRANTs, and without this the
+-- anon role gets "permission denied for table level_times". We deliberately do
+-- NOT grant SELECT/UPDATE/DELETE, keeping the table write-only from the app.
+grant insert on table public.level_times to anon, authenticated;
+
 -- Allow the public app (anon key) and any signed-in user to INSERT only.
 drop policy if exists "allow inserts from app" on public.level_times;
 create policy "allow inserts from app"

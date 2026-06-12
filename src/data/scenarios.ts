@@ -62,10 +62,10 @@ export const SCENARIOS: Scenario[] = [
         cites: [CITE.restrDef],
       },
       period: {
-        answer: PERIOD.fy26,
+        answer: PERIOD.na,
         options: PERIOD_OPTIONS,
         explain:
-          'A one-time gift with no future-period stipulation belongs to the year it is received — FY2026 (Jul 1, 2025 – Jun 30, 2026).',
+          'The gift carries no purpose, time, or other restriction, so there is no grant period to track — the determination is Not Applicable. (The revenue is still recognized in full in FY2026 when received; that is the current-year revenue determination, a separate question.)',
         cites: [],
       },
       total: { answer: 25000, explain: 'A single $25,000 gift. The full amount is the award.', cites: [] },

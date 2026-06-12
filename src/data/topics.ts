@@ -16,8 +16,9 @@ export const PERIOD = {
   fy26_27: 'FY2026 – FY2027 (Jul 1, 2025 – Jun 30, 2027)',
   fy26_28: 'FY2026 – FY2028 (Jul 1, 2025 – Jun 30, 2028)',
   none: 'No fixed period (milestone-based)',
+  na: 'Not Applicable',
 } as const;
-export const PERIOD_OPTIONS = [PERIOD.fy26, PERIOD.fy26_27, PERIOD.fy26_28, PERIOD.none];
+export const PERIOD_OPTIONS = [PERIOD.fy26, PERIOD.fy26_27, PERIOD.fy26_28, PERIOD.none, PERIOD.na];
 
 export const FYE_NOTE =
   'Your organization’s fiscal year ends June 30. The current fiscal year is FY2026 — July 1, 2025 through June 30, 2026.';
